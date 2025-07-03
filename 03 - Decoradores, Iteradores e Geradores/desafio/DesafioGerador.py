@@ -1,15 +1,19 @@
 '''
-Implemente um decorador que seja aplicado a todas as funções de transações (depósito, saque, criação de conta, etc).
- Esse decorador deve registrar (printar) a data e hora de cada transação, bem como o tipo de transação.
-Como recuperar a data atual em Python
+
+Crie um gerador que permita iterar sobre as transações de uma conta e retorne,
+uma a uma, as transações que foram realizadas.
+Esse gerador deve também ter uma forma de filtrar as transações baseado em seu tipo (por exemplo, apenas saques ou apenas depósitos). 
 
 '''
+
+
+
 
 from abc import ABC, abstractmethod
 from datetime import datetime, date
 from functools import wraps
 
-# Decorador para log de transações
+# --------------------- DECORADOR ---------------------
 def log_transacao(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
@@ -19,7 +23,7 @@ def log_transacao(func):
         return func(*args, **kwargs)
     return wrapper
 
-# Transações
+# --------------------- CLASSES DE TRANSACOES ---------------------
 class Transacao(ABC):
     @abstractmethod
     def registrar(self, conta):
@@ -41,7 +45,7 @@ class Saque(Transacao):
     def registrar(self, conta):
         return conta.sacar(self.valor)
 
-# Histórico de transações
+# --------------------- HISTÓRICO ---------------------
 class Historico:
     def __init__(self):
         self.transacoes = []
@@ -49,7 +53,12 @@ class Historico:
     def adicionar_transacao(self, transacao):
         self.transacoes.append(transacao)
 
-# Conta bancária base
+    def gerar_transacoes(self, tipo=None):
+        for transacao in self.transacoes:
+            if tipo is None or isinstance(transacao, tipo):
+                yield transacao
+
+# --------------------- CLASSE CONTA ---------------------
 class Conta:
     def __init__(self, cliente, numero):
         self.saldo = 0.0
@@ -73,7 +82,7 @@ class Conta:
     @log_transacao
     def depositar(self, valor):
         if valor <= 0:
-            print("Valor de depósito inválido.")
+            print("Valor inválido.")
             return False
         self.saldo += valor
         self.historico.adicionar_transacao(Deposito(valor))
@@ -84,7 +93,7 @@ class Conta:
     def nova_conta(cls, cliente, numero):
         return cls(cliente, numero)
 
-# Conta corrente (com limite e limite de saques)
+# --------------------- CONTA CORRENTE ---------------------
 class ContaCorrente(Conta):
     def __init__(self, cliente, numero, limite=500.0, limite_saques=3):
         super().__init__(cliente, numero)
@@ -105,7 +114,7 @@ class ContaCorrente(Conta):
         self.historico.adicionar_transacao(Saque(valor))
         return True
 
-# Cliente
+# --------------------- CLIENTE ---------------------
 class Cliente:
     def __init__(self, endereco):
         self.endereco = endereco
@@ -121,7 +130,7 @@ class Cliente:
     def adicionar_conta(self, conta):
         self.contas.append(conta)
 
-# Pessoa Física
+# --------------------- PESSOA FÍSICA ---------------------
 class PessoaFisica(Cliente):
     def __init__(self, cpf, nome, data_nascimento, endereco):
         super().__init__(endereco)
@@ -131,18 +140,32 @@ class PessoaFisica(Cliente):
 
 
 # Criar cliente
-cliente1 = PessoaFisica("123.456.789-00", "João Silva", date(1990, 5, 20), "Rua A, 123")
+cliente1 = PessoaFisica("123.456.789-00", "João Silva", date(1990, 5, 20), "Rua das Flores, 123")
 
-# Criar conta
+# Criar conta corrente
 conta1 = ContaCorrente.nova_conta(cliente1, 1001)
 cliente1.adicionar_conta(conta1)
 
 # Realizar transações
 cliente1.realizar_transacao(conta1, Deposito(1000))
 cliente1.realizar_transacao(conta1, Saque(200))
+cliente1.realizar_transacao(conta1, Saque(300))
+cliente1.realizar_transacao(conta1, Deposito(500))
 
-# Mostrar saldo e histórico
-print(f"Saldo final: {conta1.saldo_atual()}")
-print("Histórico de transações:")
-for t in conta1.historico.transacoes:
-    print(f"{type(t).__name__} - valor: {t.valor}")
+# Mostrar saldo
+print(f"\nSaldo final: {conta1.saldo_atual()}")
+
+# Gerador - todas transações
+print("\nTodas as transações:")
+for t in conta1.historico.gerar_transacoes():
+    print(f"{type(t).__name__}: R$ {t.valor}")
+
+# Gerador - apenas saques
+print("\nApenas saques:")
+for saque in conta1.historico.gerar_transacoes(Saque):
+    print(f"Saque de R$ {saque.valor}")
+
+# Gerador - apenas depósitos
+print("\nApenas depósitos:")
+for deposito in conta1.historico.gerar_transacoes(Deposito):
+    print(f"Depósito de R$ {deposito.valor}")
