@@ -43,3 +43,16 @@ Organizado por módulos, ele documenta minha evolução desde os fundamentos at�
 ---
 
 ## 📂 Estrutura do Repositório
+bootcamp-projects/
+│── 00-fundamentos/
+│── 01-estrutura-de-dados/
+│── 02-poo/
+│── 03-decoradores-iteradores-geradores/
+│── 04-data-hora/
+│── 05-manipulacao-arquivos/
+│── 06-gerenciamento-pacotes-boas-praticas/
+│── 07-banco-dados/
+│── 11-flask-api-desafio/
+│── 12-django-fullstack/
+│── 13-fastapi-assincrono/
+└── README.md
