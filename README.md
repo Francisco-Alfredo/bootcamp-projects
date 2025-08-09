@@ -16,7 +16,7 @@ Organizado por módulos, ele documenta minha evolução desde os fundamentos at�
 
 | Nº  | Módulo | Conteúdo |
 |-----|--------|----------|
-| [00](./[00-fundamentos](https://github.com/Francisco-Alfredo/bootcamp-projects/tree/main/00%20-%20Fundamentos)) | **Fundamentos** | Sintaxe básica, tipos de dados, condicionais, loops |
+| [00](./[00-fundamentos](00 - Fundamentos)) | **Fundamentos** | Sintaxe básica, tipos de dados, condicionais, loops |
 | [01](./01-estrutura-de-dados) | **Estrutura de Dados** | Listas, tuplas, conjuntos, dicionários, compreensões |
 | [02](./02-poo) | **Programação Orientada a Objetos** | Classes, herança, polimorfismo, métodos especiais |
 | [03](./03-decoradores-iteradores-geradores) | **Decoradores, Iteradores e Geradores** | Funções decoradoras, iteradores, `yield` |
